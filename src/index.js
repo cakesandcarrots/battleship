@@ -1,7 +1,6 @@
 import { gamedisplay, DOMcreator, boardcontrol } from "./DOM";
 import { ship, gameboards, user, computer, coords } from "./logic"
 import "./styles.css";
-let toggle = true
 gamedisplay()
 user.resetarrays()
 computer.computerplayitems.resetarrays();
@@ -26,23 +25,7 @@ computer.computerplayitems.placement(compship3, 5, 2)
 computer.computerplayitems.placement(compship4, 8, 4)
 console.log(computer.computerplayitems.board)
 console.log(user.board)
+boardcontrol("computercell", false)
 
 
 
-
-console.log("hi")
-const val = document.querySelector(".turndisplay")
-
-if (toggle) {
-    val.textContent = "Player's turn"
-    boardcontrol("usercell", true)
-    boardcontrol("computercell", false)
-    toggle = false
-}
-else {
-    val.textContent = "Computer's turn"
-    boardcontrol("usercell", false)
-    boardcontrol("computercell", true)
-    toggle = true
-
-}

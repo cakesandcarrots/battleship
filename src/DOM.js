@@ -1,4 +1,4 @@
-import { coords } from "./logic"
+import { coords, user, computer } from "./logic"
 
 export function gamedisplay() {
     //creates the main playarea where the game exists
@@ -10,8 +10,21 @@ export function gamedisplay() {
     //creates the header to display the respective player's turn
     const turndisplay = document.createElement("div")
     turndisplay.classList.add("turndisplay")
-    turndisplay.textContent = "Dummy text"
+    turndisplay.textContent = "John's turn"
     playarea.appendChild(turndisplay)
+    const boardownerwrapper = document.createElement("div")
+    boardownerwrapper.classList.add("boardownerwrapper")
+    const boardowner1 = document.createElement("div")
+    boardowner1.classList.add("boardowner1")
+    const boardowner2 = document.createElement("div")
+    boardowner2.classList.add("boardowner2")
+    boardowner1.classList.add(".boardowner1")
+    boardowner2.classList.add(".boardowner2")
+    boardowner1.textContent = "Jake"
+    boardowner2.textContent = "John"
+    boardownerwrapper.appendChild(boardowner1)
+    boardownerwrapper.appendChild(boardowner2)
+    playarea.appendChild(boardownerwrapper)
 
 
 
@@ -66,9 +79,11 @@ export function DOMcreator() {
                 colcell.setAttribute("xcords", i)
                 colcell.setAttribute("ycords", j)
                 colcell.setAttribute("playerboard", playerclass)
-                colcell.addEventListener('click', function (e) {
+                colcell.addEventListener('click', function work(e) {
+
                     const xcords = e.target.getAttribute("xcords")
                     const ycords = e.target.getAttribute("ycords")
+                    console.log(xcords, ycords)
                     const result = coords(xcords, ycords, playerclass)
                     if (result == "miss") {
                         e.target.style.backgroundColor = "green"
@@ -77,7 +92,18 @@ export function DOMcreator() {
                         e.target.style.backgroundColor = "red"
 
                     }
+                    if (playerclass == "userclass") {
+                        colcell.classList.remove("usercell")
 
+                        boardcontrol("usercell", true)
+                        boardcontrol("computercell", false)
+                    }
+                    else {
+                        colcell.classList.remove("computercell")
+                        boardcontrol("computercell", true)
+                        boardcontrol("usercell", false)
+                    }
+                    colcell.removeEventListener('click', work)
                 })
                 colcell.classList.add("colcell")
                 if (playerclass == "userclass")
@@ -98,16 +124,51 @@ export function DOMcreator() {
 }
 
 export function boardcontrol(player, toggle) {
-    let val = document.getElementsByClassName(player)
-    if (toggle) {
+    const turn = document.querySelector(".turndisplay")
 
-        for (let i = 0; i < val; i++) {
-            val[i].classList.remove(player)
+    if (user.allshipssunk() || computer.computerplayitems.allshipssunk()) {
+
+        if (user.allshipssunk()) {
+            turn.textContent = "Jake WON"
         }
+        else {
+            turn.textContent = "John WON"
+
+        }
+
+
+
+        const colcells = document.getElementsByClassName("colcell")
+        for (let i = 0; i < colcells.length; i++) {
+            console.log()
+            colcells[i].style.pointerEvents = "none"
+        }
+        return
+
+    }
+
+
+    const val = document.getElementsByClassName(player)
+    if (toggle) {
+        if (player == "usercell") {
+            turn.textContent = "John's turn"
+        }
+        else {
+            turn.textContent = "Jake's turn"
+
+        }
+
+        for (let i = 0; i < val.length; i++) {
+            val[i].style.pointerEvents = "none"
+        }
+
+
     }
     else {
-        for (let i = 0; i < val; i++) {
-            val[i].classList.add(player)
+
+        for (let i = 0; i < val.length; i++) {
+            val[i].style.pointerEvents = "auto"
         }
+
     }
 }

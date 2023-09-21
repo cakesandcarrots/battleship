@@ -115,7 +115,7 @@ export function gameboards() {
 //Initializing both players
 export let user = gameboards()
 export let computer = {
-    // computerplayitems: Object.create(gameboards()),
+    computerplayitems: Object.create(gameboards()),
     // logic() {
     //     if (this.trigger) {
 
@@ -157,21 +157,3 @@ export function coords(x, y, playerclass) {
 
 }
 
-export function boardcontrol(toggle) {
-    const val = document.querySelector(".turndisplay")
-
-    if (toggle) {
-        val.textContent = "Player's turn"
-        boardcontrol("usercell", true)
-        boardcontrol("computercell", false)
-        toggle = false
-    }
-    else {
-        val.textContent = "Computer's turn"
-        boardcontrol("usercell", false)
-        boardcontrol("computercell", true)
-        toggle = true
-
-    }
-
-}
