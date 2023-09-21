@@ -23,8 +23,6 @@ computer.computerplayitems.placement(compship1, 1, 1)
 computer.computerplayitems.placement(compship2, 3, 3)
 computer.computerplayitems.placement(compship3, 5, 2)
 computer.computerplayitems.placement(compship4, 8, 4)
-console.log(computer.computerplayitems.board)
-console.log(user.board)
 boardcontrol("computercell", false)
 
 

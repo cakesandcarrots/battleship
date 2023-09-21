@@ -83,7 +83,6 @@ export function DOMcreator() {
 
                     const xcords = e.target.getAttribute("xcords")
                     const ycords = e.target.getAttribute("ycords")
-                    console.log(xcords, ycords)
                     const result = coords(xcords, ycords, playerclass)
                     if (result == "miss") {
                         e.target.style.backgroundColor = "green"
@@ -140,7 +139,6 @@ export function boardcontrol(player, toggle) {
 
         const colcells = document.getElementsByClassName("colcell")
         for (let i = 0; i < colcells.length; i++) {
-            console.log()
             colcells[i].style.pointerEvents = "none"
         }
         return
