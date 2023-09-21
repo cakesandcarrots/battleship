@@ -1,0 +1,69 @@
+.playarea {
+
+    height: 100vh;
+    width: 100vw;
+    background-color: green;
+}
+
+.turndisplay {
+
+    height: 15%;
+    width: 100%;
+    background-color: pink;
+
+}
+
+.playdisplay {
+    height: 85%;
+    width: 100%;
+    background-color: orange;
+    display: flex;
+}
+
+.computerarea {
+
+    padding: 1%;
+    width: 50%;
+    height: 100%;
+    background-color: red;
+
+}
+
+.playerarea {
+    padding: 1%;
+    width: 50%;
+    height: 100%;
+    background-color: brown;
+}
+
+.turndisplay {
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 300%;
+}
+
+.userclass,
+.computerclass {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+
+}
+
+.rowcell {
+    display: flex;
+    flex: 1
+}
+
+.colcell {
+    flex: 1;
+    background-color: black;
+}
+
+.computercell,
+.usercell {
+    pointer-events: none;
+}
