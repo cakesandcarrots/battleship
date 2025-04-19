@@ -1,92 +1,195 @@
-.playarea {
+/* --- Global & Layout --- */
+* {
+    box-sizing: border-box; /* Makes padding/border included in width/height */
+    margin: 0;
+    padding: 0;
+}
 
+body {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.playarea {
+    display: flex; /* Use flexbox for main layout */
+    flex-direction: column; /* Stack children vertically */
     height: 100vh;
     width: 100vw;
-    background-color: green;
+    background-color: #f0f0f0; /* Lighter background */
 }
 
+/* --- Header & Turn Display --- */
 .turndisplay {
-
-    height: 10%;
-    width: 100%;
+    height: 10%; /* Use percentage for relative height */
     background-color: rgb(104, 10, 10);
     color: white;
-
-}
-
-.playdisplay {
-    height: 80%;
-    width: 100%;
-    background-color: orange;
-    display: flex;
-}
-
-.computerarea {
-
-    padding: 1%;
-    width: 50%;
-    height: 100%;
-    background-color: red;
-
-}
-
-.playerarea {
-    padding: 1%;
-    width: 50%;
-    height: 100%;
-    background-color: brown;
-}
-
-.turndisplay {
-
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 300%;
-}
-
-.userclass,
-.computerclass {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-
-}
-
-.rowcell {
-    display: flex;
-    flex: 1
-}
-
-.colcell {
-    flex: 1;
-    background-color: black;
-
-}
-
-.computercell,
-.usercell {
-    pointer-events: none;
+    font-size: 2.5em; /* Relative font size */
+    font-weight: bold;
 }
 
 .boardownerwrapper {
     height: 10%;
-    width: 100%;
     background-color: maroon;
     display: flex;
+    color: white;
 }
 
-.boardowner1,
-.boardowner2 {
-
+/* Combined rule for board owner labels */
+.boardowner {
     flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 250%;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-    color: white;
+    font-size: 1.8em; /* Relative font size */
+}
 
+/* --- Main Play Area (Boards) --- */
+.playdisplay {
+    flex-grow: 1; /* Takes remaining vertical space */
+    /* height: 80%; Removed, flex-grow handles it */
+    width: 100%;
+    background-color: lightgray; /* Changed background */
+    display: flex;
+    padding: 10px; /* Add some padding */
+}
 
+/* --- Individual Board Areas --- */
+/* Combined rule for player areas */
+.jackarea,
+.johnarea {
+    padding: 1%;
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Optional: Different background for visual distinction */
+.jackarea {
+    background-color: #c0c0c0;
+}
+
+.johnarea {
+    background-color: #d3d3d3;
+}
+
+/* --- Grid Containers --- */
+/* Combined rule for grid containers */
+.jackclass,
+.johnclass {
+    display: flex;
+    flex-direction: column;
+    height: 90%; /* Restore original height */
+    width: 90%;  /* Restore original width */
+    /* Removed max-width and aspect-ratio from base styles */
+    border: 2px solid black;
+    background-color: #ffffff;
+}
+
+/* --- Grid Rows & Cells --- */
+.rowcell {
+    display: flex;
+    flex: 1; /* Each row takes equal height */
+}
+
+.colcell {
+    flex: 1; /* Each cell takes equal width */
+    background-color: #add8e6; /* Default water color (light blue) */
+    border: 1px solid #888; /* Add border to see cells */
+    cursor: pointer; /* Default cursor for clickable cells */
+    transition: background-color 0.2s ease; /* Smooth transition for color changes */
+}
+
+/* Style for cells that have been missed */
+.colcell.miss {
+    background-color: #6ca0dc; /* Darker blue for miss */
+    cursor: not-allowed;
+}
+
+/* Style for cells that have been hit */
+.colcell.hit {
+    background-color: #ff4d4d; /* Red for hit */
+    cursor: not-allowed;
+}
+
+/* Specific styling for Jack's cells (optional visual difference) */
+.jackcell {
+    background-color: #b0e0e6; /* Slightly different blue */
+}
+
+/* Specific styling for John's cells (optional visual difference) */
+.johncell {
+    background-color: #add8e6; /* Standard blue */
+}
+
+/* Ensure hit/miss cells always have 'not-allowed' cursor */
+.jackcell.miss,
+.jackcell.hit,
+.johncell.miss,
+.johncell.hit {
+     cursor: not-allowed;
+}
+
+/* --- Responsive Design (Mobile) --- */
+
+/* Apply styles when screen width is 768px or less */
+@media (max-width: 768px) {
+
+    /* Adjust header font sizes */
+    .turndisplay {
+        font-size: 1.8em; /* Smaller font size */
+        height: 8%; /* Slightly less height */
+    }
+
+    .boardownerwrapper {
+        height: 8%; /* Slightly less height */
+    }
+
+    .boardowner {
+        font-size: 1.2em; /* Smaller font size */
+    }
+
+    /* Stack boards vertically */
+    .playdisplay {
+        flex-direction: column; /* Stack items vertically */
+        align-items: center; /* Center boards horizontally */
+        padding: 5px; /* Reduce padding */
+        overflow-y: auto; /* Allow scrolling if content overflows */
+    }
+
+    /* Make board areas take full width and adjust padding */
+    .jackarea,
+    .johnarea {
+        width: 100%; /* Take full width */
+        padding: 10px 5px; /* Adjust vertical/horizontal padding */
+        /* Height will be determined by content (.jackclass/.johnclass) */
+    }
+
+    /* Adjust grid container size specifically for vertical layout */
+    .jackclass,
+    .johnclass {
+        width: 95%; /* Use more width on mobile */
+        max-width: 500px; /* Optional: Limit size on larger mobile/tablets */
+        aspect-ratio: 1 / 1; /* Make it square on mobile */
+        height: auto; /* Let aspect-ratio determine height */
+    }
+}
+
+/* Optional: Further adjustments for very small screens */
+@media (max-width: 480px) {
+    .turndisplay {
+        font-size: 1.5em;
+    }
+    .boardowner {
+        font-size: 1em;
+    }
+    .jackclass,
+    .johnclass {
+        border-width: 1px; /* Thinner border */
+    }
+    .colcell {
+        border-width: 1px; /* Thinner border */
+    }
 }

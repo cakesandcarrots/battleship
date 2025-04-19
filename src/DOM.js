@@ -1,172 +1,188 @@
-import { coords, user, computer } from "./logic"
+import { coords, jack, john } from "./logic";
+
+let currentPlayerName = "Jack";
+
 
 export function gamedisplay() {
-    //creates the main playarea where the game exists
-    const playarea = document.createElement("div")
-    playarea.classList.add("playarea")
+  const playarea = document.createElement("div");
+  playarea.classList.add("playarea");
 
+  const turndisplay = document.createElement("div");
+  turndisplay.classList.add("turndisplay");
 
+  playarea.appendChild(turndisplay);
 
-    //creates the header to display the respective player's turn
-    const turndisplay = document.createElement("div")
-    turndisplay.classList.add("turndisplay")
-    turndisplay.textContent = "John's turn"
-    playarea.appendChild(turndisplay)
-    const boardownerwrapper = document.createElement("div")
-    boardownerwrapper.classList.add("boardownerwrapper")
-    const boardowner1 = document.createElement("div")
-    boardowner1.classList.add("boardowner1")
-    const boardowner2 = document.createElement("div")
-    boardowner2.classList.add("boardowner2")
-    boardowner1.classList.add(".boardowner1")
-    boardowner2.classList.add(".boardowner2")
-    boardowner1.textContent = "Jake"
-    boardowner2.textContent = "John"
-    boardownerwrapper.appendChild(boardowner1)
-    boardownerwrapper.appendChild(boardowner2)
-    playarea.appendChild(boardownerwrapper)
+  const boardownerwrapper = document.createElement("div");
+  boardownerwrapper.classList.add("boardownerwrapper");
+  const boardowner1 = document.createElement("div");
+  boardowner1.classList.add("boardowner");
+  boardowner1.textContent = "Jack's Board";
+  const boardowner2 = document.createElement("div");
+  boardowner2.classList.add("boardowner");
+  boardowner2.textContent = "John's Board";
+  boardownerwrapper.appendChild(boardowner1);
+  boardownerwrapper.appendChild(boardowner2);
+  playarea.appendChild(boardownerwrapper);
 
+  const playdisplay = document.createElement("div");
+  playdisplay.classList.add("playdisplay");
+  playarea.appendChild(playdisplay);
 
+  const jackarea = document.createElement("div");
+  jackarea.classList.add("jackarea");
+  const jackclass = document.createElement("div");
+  jackclass.classList.add("jackclass", "grid-container");
+  jackarea.appendChild(jackclass);
 
-    //creates the area for both boards of players
-    const playdisplay = document.createElement("div")
-    playdisplay.classList.add("playdisplay")
-    playarea.appendChild(playdisplay)
+  const johnarea = document.createElement("div");
+  johnarea.classList.add("johnarea");
+  const johnclass = document.createElement("div");
+  johnclass.classList.add("johnclass", "grid-container");
+  johnarea.appendChild(johnclass);
 
+  playdisplay.appendChild(jackarea);
+  playdisplay.appendChild(johnarea);
 
-
-
-    const computerarea = document.createElement("div")
-    computerarea.classList.add("computerarea")
-
-
-
-    const playerarea = document.createElement("div")
-    playerarea.classList.add("playerarea")
-
-
-
-    const userclass = document.createElement("div")
-    userclass.classList.add("userclass")
-    playerarea.appendChild(userclass)
-
-    const computerclass = document.createElement("div")
-    computerclass.classList.add("computerclass")
-    computerarea.appendChild(computerclass)
-
-
-
-    playdisplay.appendChild(computerarea)
-    playdisplay.appendChild(playerarea)
-    document.body.appendChild(playarea)
+  document.body.appendChild(playarea);
 }
 
 
-
-
-//creates the boards of respective players
 export function DOMcreator() {
+  
+    /**
+     * Creates the board grid for a player.
+     * @param {Array<Array<any>>} playerboard - The player's board data.
+     * @param {string} boardClass - The class name for the board container.
+     */
+   
+  function createBoardGrid(playerboard, boardClass) {
+    const playerGridContainer = document.querySelector(`.${boardClass}`);
+    if (!playerGridContainer) {
+      console.error(`Container element not found for class: ${boardClass}`);
+      return;
+    }
+    playerGridContainer.innerHTML = "";
 
+    playerboard.forEach((row, i) => {
+      const rowcell = document.createElement("div");
+      rowcell.classList.add("rowcell");
+      row.forEach((cellData, j) => {
+        const colcell = document.createElement("div");
+        colcell.classList.add("colcell");
 
-    function initialize(playerboard, playerclass) {
-        let playergrid = document.getElementsByClassName(playerclass)
+        colcell.setAttribute("data-xcords", i);
+        colcell.setAttribute("data-ycords", j);
+        colcell.setAttribute("data-playerboard", boardClass);
 
-        for (let i = 0; i < playerboard[0].length; i++) {
-            let rowcell = document.createElement("div")
-            rowcell.classList.add("rowcell")
-            for (let j = 0; j < playerboard.length; j++) {
-                const colcell = document.createElement("div")
-                colcell.setAttribute("xcords", i)
-                colcell.setAttribute("ycords", j)
-                colcell.setAttribute("playerboard", playerclass)
-                colcell.addEventListener('click', function work(e) {
+        colcell.classList.add(
+          boardClass === "jackclass" ? "jackcell" : "johncell"
+        );
 
-                    const xcords = e.target.getAttribute("xcords")
-                    const ycords = e.target.getAttribute("ycords")
-                    const result = coords(xcords, ycords, playerclass)
-                    if (result == "miss") {
-                        e.target.style.backgroundColor = "green"
-                    }
-                    else if (result == "hit") {
-                        e.target.style.backgroundColor = "red"
+        colcell.addEventListener("click", handleCellClick);
 
-                    }
-                    if (playerclass == "userclass") {
-                        colcell.classList.remove("usercell")
+        rowcell.appendChild(colcell);
+      });
+      playerGridContainer.appendChild(rowcell);
+    });
+  }
 
-                        boardcontrol("usercell", true)
-                        boardcontrol("computercell", false)
-                    }
-                    else {
-                        colcell.classList.remove("computercell")
-                        boardcontrol("computercell", true)
-                        boardcontrol("usercell", false)
-                    }
-                    colcell.removeEventListener('click', work)
-                })
-                colcell.classList.add("colcell")
-                if (playerclass == "userclass")
-                    colcell.classList.add("usercell")
-                else
-                    colcell.classList.add("computercell")
-                rowcell.appendChild(colcell)
+  /**
+   * Handles the click event on a grid cell.
+   * @param {Event} e - The click event object.
+   */
+  function handleCellClick(e) {
+    const cell = e.target;
+    const xcords = cell.getAttribute("data-xcords");
+    const ycords = cell.getAttribute("data-ycords");
+    const targetBoardClass = cell.getAttribute("data-playerboard");
 
-            }
-            playergrid[0].appendChild(rowcell)
-        }
-        return "hello"
+    if (
+      (currentPlayerName === "Jack" && targetBoardClass !== "johnclass") ||
+      (currentPlayerName === "John" && targetBoardClass !== "jackclass")
+    ) {
+      console.log("Click on your own board or wrong board for turn!");
+
+      return;
     }
 
-    // this line is needed else the code breaks (required for nested functions)
-    //Check this for recalling https://stackoverflow.com/questions/8817872/javascript-call-nested-function
-    DOMcreator.initialize = initialize
+    const result = coords(xcords, ycords, targetBoardClass);
+
+    switch (result) {
+      case "hit":
+        cell.classList.add("hit");
+        break;
+      case "miss":
+        cell.classList.add("miss");
+        break;
+      case "already_attacked":
+        console.log("Cell already attacked");
+
+        return;
+      default:
+        break;
+    }
+
+    cell.style.pointerEvents = "none";
+    cell.style.cursor = "not-allowed";
+
+    let winnerName = null;
+
+    if (targetBoardClass === "johnclass") {
+      if (john.allshipssunk()) {
+        winnerName = "Jack";
+      }
+    } else {
+      if (jack.allshipssunk()) {
+        winnerName = "John";
+      }
+    }
+
+    if (winnerName) {
+      document.querySelector(
+        ".turndisplay"
+      ).textContent = `${winnerName} WINS!`;
+      boardcontrol("jackcell", true);
+      boardcontrol("johncell", true);
+
+      return;
+    }
+
+    currentPlayerName = currentPlayerName === "Jack" ? "John" : "Jack";
+    document.querySelector(
+      ".turndisplay"
+    ).textContent = `${currentPlayerName}'s Turn`;
+
+    if (currentPlayerName === "Jack") {
+      boardcontrol("jackcell", true);
+      boardcontrol("johncell", false);
+    } else {
+      boardcontrol("jackcell", false);
+      boardcontrol("johncell", true);
+    }
+  }
+
+  DOMcreator.createBoardGrid = createBoardGrid;
 }
 
-export function boardcontrol(player, toggle) {
-    const turn = document.querySelector(".turndisplay")
+/**
+ * Controls the interactivity (pointer events) of player board cells.
+ * @param {string} boardCellClass - The class of cells to control ('jackcell' or 'johncell').
+ * @param {boolean} disable - True to disable pointer events, false to enable.
+ */
+export function boardcontrol(boardCellClass, disable) {
+  const cells = document.getElementsByClassName(boardCellClass);
 
-    if (user.allshipssunk() || computer.computerplayitems.allshipssunk()) {
+  for (let i = 0; i < cells.length; i++) {
+    if (
+      !cells[i].classList.contains("hit") &&
+      !cells[i].classList.contains("miss")
+    ) {
+      cells[i].style.pointerEvents = disable ? "none" : "auto";
 
-        if (user.allshipssunk()) {
-            turn.textContent = "Jake WON"
-        }
-        else {
-            turn.textContent = "John WON"
-
-        }
-
-
-
-        const colcells = document.getElementsByClassName("colcell")
-        for (let i = 0; i < colcells.length; i++) {
-            colcells[i].style.pointerEvents = "none"
-        }
-        return
-
+      cells[i].style.cursor = disable ? "not-allowed" : "pointer";
+    } else {
+      cells[i].style.pointerEvents = "none";
+      cells[i].style.cursor = "not-allowed";
     }
-
-
-    const val = document.getElementsByClassName(player)
-    if (toggle) {
-        if (player == "usercell") {
-            turn.textContent = "John's turn"
-        }
-        else {
-            turn.textContent = "Jake's turn"
-
-        }
-
-        for (let i = 0; i < val.length; i++) {
-            val[i].style.pointerEvents = "none"
-        }
-
-
-    }
-    else {
-
-        for (let i = 0; i < val.length; i++) {
-            val[i].style.pointerEvents = "auto"
-        }
-
-    }
+  }
 }

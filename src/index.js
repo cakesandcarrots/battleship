@@ -1,29 +1,45 @@
-import { gamedisplay, DOMcreator, boardcontrol } from "./DOM";
-import { ship, gameboards, user, computer, coords } from "./logic"
-import "./styles.css";
-gamedisplay()
-user.resetarrays()
-computer.computerplayitems.resetarrays();
-DOMcreator()
-DOMcreator.initialize(user.board, "userclass")
-DOMcreator.initialize(computer.computerplayitems.board, "computerclass")
-const usership1 = ship(3, 0, "vertical")
-const usership2 = ship(4, 0, "horizontal")
-const usership3 = ship(3, 0, "vertical")
-const usership4 = ship(2, 0, "horizontal")
-user.placement(usership1, 0, 1)
-user.placement(usership2, 2, 4)
-user.placement(usership3, 5, 1)
-user.placement(usership4, 5, 4)
-const compship1 = ship(3, 0, "vertical")
-const compship2 = ship(3, 0, "horizontal")
-const compship3 = ship(2, 0, "vertical")
-const compship4 = ship(4, 0, "horizontal")
-computer.computerplayitems.placement(compship1, 1, 1)
-computer.computerplayitems.placement(compship2, 3, 3)
-computer.computerplayitems.placement(compship3, 5, 2)
-computer.computerplayitems.placement(compship4, 8, 4)
-boardcontrol("computercell", false)
+import { gamedisplay, DOMcreator, boardcontrol } from "./DOM.js";
+// Renamed imports
+import { ship, jack, john } from "./logic.js"; // Removed coords as it's not directly used here
 
+// --- Game Setup ---
 
+// 1. Create the basic HTML structure
+gamedisplay();
 
+// 2. Initialize the game boards
+jack.initializeBoard();
+john.initializeBoard();
+
+// 3. Create the visual representation (DOM elements) for the boards
+DOMcreator();
+DOMcreator.createBoardGrid(jack.board, "jackclass"); // Use jackclass
+DOMcreator.createBoardGrid(john.board, "johnclass"); // Use johnclass
+
+// 4. Define and place ships for Jack
+const jackship1 = ship(3, 0, "vertical");    // Renamed variables
+const jackship2 = ship(4, 0, "horizontal");
+const jackship3 = ship(3, 0, "vertical");
+const jackship4 = ship(2, 0, "horizontal");
+jack.placement(jackship1, 0, 1);
+jack.placement(jackship2, 2, 4);
+jack.placement(jackship3, 5, 1);
+jack.placement(jackship4, 5, 4);
+// TODO: Add error handling
+
+// 5. Define and place ships for John
+const johnship1 = ship(3, 0, "vertical");    // Renamed variables
+const johnship2 = ship(3, 0, "horizontal");
+const johnship3 = ship(2, 0, "vertical");
+const johnship4 = ship(4, 0, "horizontal");
+john.placement(johnship1, 1, 1);
+john.placement(johnship2, 3, 3);
+john.placement(johnship3, 5, 2);
+john.placement(johnship4, 8, 4);
+// TODO: Add error handling
+
+// 6. Initial board control setup: Jack starts.
+// Jack needs to click on John's board.
+boardcontrol("jackcell", true); // Disable clicks on Jack's own board
+boardcontrol("johncell", false); // Enable clicks on John's board (target for Jack)
+document.querySelector(".turndisplay").textContent = "Jack's Turn"; // Set initial turn display
