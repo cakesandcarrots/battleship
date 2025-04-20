@@ -7,6 +7,7 @@
 
 body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+    overflow: hidden; /* Prevent scrolling issues with overlay */
 }
 
 .playarea {
@@ -27,32 +28,97 @@ body {
     align-items: center;
     font-size: 2.5em; /* Relative font size */
     font-weight: bold;
+    flex-shrink: 0; /* Prevent shrinking */
 }
 
 .boardownerwrapper {
-    height: 10%;
+    height: auto; /* Adjust height based on content */
+    min-height: 10%; /* Ensure minimum height */
     background-color: maroon;
     display: flex;
     color: white;
+    flex-shrink: 0; /* Prevent shrinking */
+    padding: 5px 0; /* Add some padding */
 }
 
-/* Combined rule for board owner labels */
-.boardowner {
+/* New container for label + powerups */
+.boardowner-area {
     flex: 1;
+    display: flex;
+    flex-direction: column; /* Stack label and buttons */
+    align-items: center;
+    justify-content: center; /* Center vertically */
+    gap: 5px; /* Space between label and buttons */
+}
+
+.boardowner {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 1.8em; /* Relative font size */
+    font-size: 1.6em; /* Slightly smaller */
+    margin-bottom: 5px; /* Space below label */
+}
+
+/* Container for powerup buttons */
+.powerup-controls {
+    display: flex;
+    gap: 8px; /* Space between buttons */
+}
+
+.powerup-btn {
+    padding: 5px 10px;
+    font-size: 0.8em;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    color: #333;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.powerup-btn:hover:not(:disabled) {
+    background-color: #e0e0e0;
+    border-color: #aaa;
+}
+
+.powerup-btn:disabled {
+    background-color: #aaa;
+    color: #666;
+    cursor: not-allowed;
+    border-color: #999;
+}
+
+/* Style for active cluster mode */
+.powerup-btn.cluster-btn.active {
+    background-color: lightcoral;
+    border-color: red;
+    color: white;
 }
 
 /* --- Main Play Area (Boards) --- */
 .playdisplay {
     flex-grow: 1; /* Takes remaining vertical space */
-    /* height: 80%; Removed, flex-grow handles it */
     width: 100%;
     background-color: lightgray; /* Changed background */
     display: flex;
     padding: 10px; /* Add some padding */
+    overflow: hidden; /* Prevent internal scrolling unless needed */
+}
+
+/* Hide main game display initially */
+.playdisplay {
+    display: none; /* Initially hidden */
+}
+.playdisplay.active {
+    display: flex; /* Show when active */
+}
+
+/* Hide board owner labels initially */
+.boardownerwrapper {
+    display: none; /* Initially hidden */
+}
+.boardownerwrapper.active {
+    display: flex; /* Show when active */
 }
 
 /* --- Individual Board Areas --- */
@@ -83,7 +149,6 @@ body {
     flex-direction: column;
     height: 90%; /* Restore original height */
     width: 90%;  /* Restore original width */
-    /* Removed max-width and aspect-ratio from base styles */
     border: 2px solid black;
     background-color: #ffffff;
 }
@@ -132,7 +197,229 @@ body {
      cursor: not-allowed;
 }
 
-/* --- Responsive Design (Mobile) --- */
+/* --- Placement Phase UI --- */
+.placement-screen {
+    position: absolute; /* Overlay on top */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85); /* Dark overlay */
+    display: flex; /* Use flex for centering */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    z-index: 10; /* Ensure it's above other content */
+    padding: 20px;
+    overflow-y: auto; /* Allow scrolling if content overflows */
+}
+
+.placement-screen.hidden {
+    display: none; /* Hide when not active */
+}
+
+.placement-header {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.placement-content {
+    display: flex;
+    flex-direction: column; /* Default: Stack inventory and grid */
+    align-items: center;
+    width: 100%;
+    max-width: 900px; /* Limit width */
+}
+
+.ship-inventory {
+    background-color: #444;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    display: flex;
+    flex-wrap: wrap; /* Allow ships to wrap */
+    gap: 10px; /* Spacing between ships */
+    justify-content: center;
+    border: 1px solid #666;
+    align-items: flex-start; /* Align items to the top for button placement */
+}
+
+/* New container for draggable ship + rotate button */
+.draggable-ship-container {
+    display: flex;
+    flex-direction: column; /* Stack ship visual and button */
+    align-items: center; /* Center items horizontally */
+    gap: 4px; /* Space between ship and button */
+}
+
+.draggable-ship {
+    border: 1px solid #ccc;
+    background-color: #666;
+    cursor: grab;
+    display: flex; /* Use flex for cells */
+    /* Dimensions set dynamically or via classes */
+    /* Maybe add a slight margin if needed */
+}
+
+.draggable-ship.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+/* Style for the individual rotate button */
+.rotate-ship-btn {
+    background-color: #555;
+    color: white;
+    border: 1px solid #888;
+    border-radius: 4px;
+    padding: 2px 5px;
+    font-size: 0.8em;
+    cursor: pointer;
+    line-height: 1; /* Ensure icon fits well */
+}
+
+.rotate-ship-btn:hover {
+    background-color: #777;
+}
+
+/* Represent ship cells visually */
+.ship-cell {
+    width: 30px; /* Example size */
+    height: 30px;
+    border: 1px solid #999;
+    background-color: gray;
+}
+
+/* Orientation classes for draggable ships */
+.draggable-ship.horizontal {
+    flex-direction: row;
+}
+.draggable-ship.vertical {
+    flex-direction: column;
+}
+/* Adjust dimensions based on orientation and length */
+/* Example for length 4 */
+.draggable-ship.horizontal[data-length="4"] { width: 120px; height: 30px; }
+.draggable-ship.vertical[data-length="4"] { width: 30px; height: 120px; }
+/* Add similar rules for lengths 3 and 2 */
+.draggable-ship.horizontal[data-length="3"] { width: 90px; height: 30px; }
+.draggable-ship.vertical[data-length="3"] { width: 30px; height: 90px; }
+.draggable-ship.horizontal[data-length="2"] { width: 60px; height: 30px; }
+.draggable-ship.vertical[data-length="2"] { width: 30px; height: 60px; }
+
+.placement-grid-container {
+    width: 90%; /* Adjust as needed */
+    max-width: 400px; /* Match game grid size */
+    aspect-ratio: 1 / 1;
+    margin-bottom: 20px;
+}
+
+/* Use existing grid styles but target the placement grid specifically */
+.placement-grid-container .jackclass,
+.placement-grid-container .johnclass {
+    height: 100%; /* Fill container */
+    width: 100%;
+    max-width: none; /* Override max-width */
+}
+
+/* Highlight cells during drag */
+.colcell.drag-over-valid {
+    background-color: lightgreen !important; /* Use !important cautiously */
+}
+.colcell.drag-over-invalid {
+    background-color: lightcoral !important;
+}
+
+/* Style for ships placed visually on the grid during placement */
+.colcell.ship-placed {
+    background-color: darkgray !important;
+}
+
+.placement-controls {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+    flex-wrap: wrap; /* Allow buttons to wrap */
+    justify-content: center;
+}
+
+.placement-controls button {
+    padding: 10px 15px;
+    font-size: 1em;
+    cursor: pointer;
+    border: none;
+    border-radius: 4px;
+}
+
+#confirm-placement-btn {
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
+#confirm-placement-btn:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+
+#toggle-orientation-btn {
+    background-color: #007bff; /* Blue */
+    color: white;
+}
+
+/* --- Game Over Modal --- */
+.modal-overlay {
+    position: fixed; /* Use fixed to cover viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent dark background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20; /* Ensure modal is above placement screen if needed */
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none; /* Prevent interaction when hidden */
+    display: none; /* Or use display: none; if preferred */
+}
+
+.modal-content {
+    background-color: white;
+    padding: 30px 40px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    color: #333;
+}
+
+.modal-message {
+    font-size: 1.8em;
+    margin-bottom: 25px;
+    color: #1a1a1a;
+}
+
+.modal-restart-btn {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    cursor: pointer;
+    background-color: #4CAF50; /* Green */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.modal-restart-btn:hover {
+    background-color: #45a049; /* Darker green */
+}
+
+/* --- Responsive Design (Shared & Mobile) --- */
 
 /* Apply styles when screen width is 768px or less */
 @media (max-width: 768px) {
@@ -148,32 +435,89 @@ body {
     }
 
     .boardowner {
-        font-size: 1.2em; /* Smaller font size */
+        font-size: 1.1em; /* Adjust size */
     }
 
-    /* Stack boards vertically */
-    .playdisplay {
+    .powerup-btn {
+        font-size: 0.7em;
+        padding: 4px 8px;
+    }
+
+    .powerup-controls {
+        gap: 5px;
+    }
+
+    /* Stack main game boards vertically */
+    .playdisplay.active { /* Target only when active */
         flex-direction: column; /* Stack items vertically */
         align-items: center; /* Center boards horizontally */
         padding: 5px; /* Reduce padding */
         overflow-y: auto; /* Allow scrolling if content overflows */
     }
 
-    /* Make board areas take full width and adjust padding */
+    /* Make main game board areas take full width */
     .jackarea,
     .johnarea {
         width: 100%; /* Take full width */
         padding: 10px 5px; /* Adjust vertical/horizontal padding */
-        /* Height will be determined by content (.jackclass/.johnclass) */
     }
 
-    /* Adjust grid container size specifically for vertical layout */
+    /* Adjust main game grid container size specifically for vertical layout */
     .jackclass,
     .johnclass {
         width: 95%; /* Use more width on mobile */
         max-width: 500px; /* Optional: Limit size on larger mobile/tablets */
         aspect-ratio: 1 / 1; /* Make it square on mobile */
         height: auto; /* Let aspect-ratio determine height */
+    }
+
+    /* Placement Screen adjustments */
+    .placement-header {
+        font-size: 1.5em;
+    }
+    .ship-inventory {
+        padding: 10px;
+    }
+    .ship-cell { /* Smaller cells on mobile */
+        width: 25px;
+        height: 25px;
+    }
+    /* Adjust draggable ship dimensions based on new cell size */
+    .draggable-ship.horizontal[data-length="4"] { width: 100px; height: 25px; }
+    .draggable-ship.vertical[data-length="4"] { width: 25px; height: 100px; }
+    .draggable-ship.horizontal[data-length="3"] { width: 75px; height: 25px; }
+    .draggable-ship.vertical[data-length="3"] { width: 25px; height: 75px; }
+    .draggable-ship.horizontal[data-length="2"] { width: 50px; height: 25px; }
+    .draggable-ship.vertical[data-length="2"] { width: 25px; height: 50px; }
+
+    .rotate-ship-btn {
+        font-size: 0.7em; /* Slightly smaller button on mobile */
+    }
+
+    .placement-grid-container {
+        width: 95%;
+        max-width: 350px; /* Adjust max grid size */
+    }
+    .placement-controls {
+        flex-direction: column; /* Stack buttons */
+        width: 80%;
+        max-width: 250px;
+    }
+    .placement-controls button {
+        width: 100%;
+    }
+
+    .modal-content {
+        padding: 25px 30px;
+        width: 80%;
+        max-width: 400px;
+    }
+    .modal-message {
+        font-size: 1.5em;
+    }
+    .modal-restart-btn {
+        padding: 10px 20px;
+        font-size: 1em;
     }
 }
 
@@ -183,7 +527,16 @@ body {
         font-size: 1.5em;
     }
     .boardowner {
-        font-size: 1em;
+        font-size: 0.9em; /* Adjust size */
+    }
+    .powerup-btn {
+        font-size: 0.6em;
+        padding: 3px 6px;
+    }
+    /* Stack powerups if needed */
+    .powerup-controls {
+       flex-direction: column;
+       gap: 3px;
     }
     .jackclass,
     .johnclass {
@@ -191,5 +544,29 @@ body {
     }
     .colcell {
         border-width: 1px; /* Thinner border */
+    }
+    .ship-cell { /* Even smaller cells */
+        width: 20px;
+        height: 20px;
+    }
+    /* Adjust draggable ship dimensions */
+    .draggable-ship.horizontal[data-length="4"] { width: 80px; height: 20px; }
+    .draggable-ship.vertical[data-length="4"] { width: 20px; height: 80px; }
+    .draggable-ship.horizontal[data-length="3"] { width: 60px; height: 20px; }
+    .draggable-ship.vertical[data-length="3"] { width: 20px; height: 60px; }
+    .draggable-ship.horizontal[data-length="2"] { width: 40px; height: 20px; }
+    .draggable-ship.vertical[data-length="2"] { width: 20px; height: 40px; }
+
+    .placement-grid-container {
+        max-width: 300px; /* Further reduce grid size */
+    }
+
+    .modal-content {
+        padding: 20px 25px;
+        width: 90%;
+    }
+    .modal-message {
+        font-size: 1.3em;
+        margin-bottom: 20px;
     }
 }
