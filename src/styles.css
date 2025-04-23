@@ -7,20 +7,22 @@
 
 body {
     font-family: Verdana, Geneva, Tahoma, sans-serif;
-    overflow: hidden; /* Prevent scrolling issues with overlay */
+    /* Keep overflow hidden on body to prevent double scrollbars */
+    overflow: hidden; 
 }
 
 .playarea {
     display: flex; /* Use flexbox for main layout */
     flex-direction: column; /* Stack children vertically */
-    height: 100vh;
+    height: 100vh; /* Fixed viewport height */
     width: 100vw;
     background-color: #f0f0f0; /* Lighter background */
+    overflow-y: auto; /* Make the main container scrollable if content overflows */
 }
 
 /* --- Header & Turn Display --- */
 .turndisplay {
-    height: 10%; /* Use percentage for relative height */
+    padding: 15px 0; /* Use padding for height */
     background-color: rgb(104, 10, 10);
     color: white;
     display: flex;
@@ -32,13 +34,11 @@ body {
 }
 
 .boardownerwrapper {
-    height: auto; /* Adjust height based on content */
-    min-height: 10%; /* Ensure minimum height */
+    padding: 10px 0; /* Use padding */
     background-color: maroon;
     display: flex;
     color: white;
     flex-shrink: 0; /* Prevent shrinking */
-    padding: 5px 0; /* Add some padding */
 }
 
 /* New container for label + powerups */
@@ -102,7 +102,6 @@ body {
     background-color: lightgray; /* Changed background */
     display: flex;
     padding: 10px; /* Add some padding */
-    overflow: hidden; /* Prevent internal scrolling unless needed */
 }
 
 /* Hide main game display initially */
@@ -259,8 +258,7 @@ body {
     background-color: #666;
     cursor: grab;
     display: flex; /* Use flex for cells */
-    /* Dimensions set dynamically or via classes */
-    /* Maybe add a slight margin if needed */
+
 }
 
 .draggable-ship.dragging {
@@ -300,10 +298,8 @@ body {
     flex-direction: column;
 }
 /* Adjust dimensions based on orientation and length */
-/* Example for length 4 */
 .draggable-ship.horizontal[data-length="4"] { width: 120px; height: 30px; }
 .draggable-ship.vertical[data-length="4"] { width: 30px; height: 120px; }
-/* Add similar rules for lengths 3 and 2 */
 .draggable-ship.horizontal[data-length="3"] { width: 90px; height: 30px; }
 .draggable-ship.vertical[data-length="3"] { width: 30px; height: 90px; }
 .draggable-ship.horizontal[data-length="2"] { width: 60px; height: 30px; }
@@ -424,14 +420,14 @@ body {
 /* Apply styles when screen width is 768px or less */
 @media (max-width: 768px) {
 
-    /* Adjust header font sizes */
+    /* Adjust header font sizes and padding */
     .turndisplay {
         font-size: 1.8em; /* Smaller font size */
-        height: 8%; /* Slightly less height */
+        padding: 10px 0; /* Adjust padding */
     }
 
     .boardownerwrapper {
-        height: 8%; /* Slightly less height */
+        padding: 8px 0; /* Adjust padding */
     }
 
     .boardowner {
@@ -452,7 +448,6 @@ body {
         flex-direction: column; /* Stack items vertically */
         align-items: center; /* Center boards horizontally */
         padding: 5px; /* Reduce padding */
-        overflow-y: auto; /* Allow scrolling if content overflows */
     }
 
     /* Make main game board areas take full width */
@@ -525,6 +520,10 @@ body {
 @media (max-width: 480px) {
     .turndisplay {
         font-size: 1.5em;
+        padding: 8px 0;
+    }
+    .boardownerwrapper {
+        padding: 5px 0;
     }
     .boardowner {
         font-size: 0.9em; /* Adjust size */

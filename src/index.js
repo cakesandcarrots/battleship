@@ -1,5 +1,4 @@
-// Import necessary functions and objects
-import { gamedisplay, setupPlacementUI, showPlacementScreen } from "./DOM.js"; // Removed DOMcreator import
+import { gamedisplay, setupPlacementUI, showPlacementScreen } from "./DOM.js";
 import {  jack, john, SHIP_TYPES } from "./logic.js"; // Import SHIP_TYPES
 
 // --- Game Setup ---
@@ -17,5 +16,3 @@ setupPlacementUI(SHIP_TYPES);
 // 4. Start the placement phase for the first player (Jack)
 showPlacementScreen("Jack", jack.board);
 
-// --- Main game grids (jackclass, johnclass) will be populated by startGame() in DOM.js ---
-// --- Attacking phase starts after both players confirm placement ---
